@@ -17,3 +17,10 @@ void main(){
 	delay(10000);
 	}
 }
+
+/*delay calculation explained
+- MCU Frequency - 11.0592 Mhz
+- thus, T = 0.09 microsecond
+- 1 T state takes 0.09 microsecond to complete, then 12 T states ( or 1 Machine Cycle) takes 1.08 micrseconds 
+- thus 1 millisecond = 1000/1.08  = 926 loops 
+*/
