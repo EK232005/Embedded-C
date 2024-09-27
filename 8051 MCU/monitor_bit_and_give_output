@@ -1,0 +1,19 @@
+#include <reg51.h>
+sbit monitor = P1^5;
+
+void main(){
+	P1 = 0xFF;
+	P2 = 0x00;
+	P0 = 0x00;
+	while(1){
+		if(monitor == 1){
+			P2 = 0x00;
+			P0 = 0x55;
+		}
+		else{
+			P0 = 0x00;
+			P2 = 0xAA;
+		}
+	}
+}
+
