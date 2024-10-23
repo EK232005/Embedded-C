@@ -13,9 +13,9 @@ void voting_mode();
 //LCD FUNCTIONS and CONSTANTS- Send Data and Commands along with Initialization
 
 #define display_port P2 //Data pins connected to port 2 on microcontroller
-sbit rs = P3^3;
-sbit rw = P3^4;
-sbit e =  P3^5;
+sbit rs = P3^2;
+sbit rw = P3^3;
+sbit e =  P3^4;
 
 void lcd_init(){ //Initialize lcd function
 	lcd_cmd(0x38);              // for using 2 lines and 5X7 matrix of LCD
@@ -40,7 +40,7 @@ void lcd_data(unsigned char disp_data){  //Function to send display data to LCD
   rs= 1;                      //send data mode
   rw=0;
   e=1;
-  msdelay(1);
+  msdelay(10);
   e=0;
 }
 void send_msg(unsigned char *a){
@@ -67,10 +67,10 @@ sbit row2 = P1^1;
 sbit row3 = P1^2;
 sbit row4 = P1^3;
 
-sbit col1 = P1^7;
-sbit col2 = P1^6;
-sbit col3 = P1^5;
-sbit col4 = P1^4;
+sbit col1 = P1^4;
+sbit col2 = P1^5;
+sbit col3 = P1^6;
+sbit col4 = P1^7;
 
 unsigned char code keypad[4][4] = {
     {'1', '2', '3', 'A'},
@@ -107,25 +107,23 @@ char keypad_scan() {
 }
 //LOGIC MODES - FUNCTIONS and CONSTANTS
 
-unsigned int candidate_votes[4]; //stores individual candidate votes in the array (upto 4 candidates)
+unsigned int party1 =0,party2=0,party3=0,party4=0; //stores individual candidate votes in the array (upto 4 candidates)
 unsigned char code password[4] = {'1','2','3','4'};
 
 void disp_int_to_str(unsigned int num){
-	unsigned char *str;
+	unsigned char str[6];
+	unsigned int i=0,j;
 	if(num==0){
-		*(str++) = '0';
+		str[i++] = '0';
 	}
 	else{
 		while(num>0){
-			*(str++) = (num%10) + '0';
+			str[i++] = (num%10) + '0';
 			num /=10;
 		}
  }
-	*str = '\0';
-	
-	while(*str != '\0'){ 		      // searching the null terminator in the sentence
-		lcd_data(*str);
-		str++;
+	for(j = i-1;j>=0;j--){
+		lcd_data(str[j]);
 	}
 }
 void msdelay(unsigned int ms){ //Function to create delay
@@ -152,13 +150,13 @@ void modechoose(){	//called on power on, and after each time user finishes votin
 		unsigned char temp = keypad_scan();
 		if(temp != 0){
 			if(temp == keypad[3][2]){
-				send_msg(d);
+				send_msg(c);
 				msdelay(2000);
 				result_mode();
 				break;
 			}
 			else{
-				send_msg(c);
+				send_msg(d);
 				msdelay(2000);
 				voting_mode();
 				break;
@@ -175,46 +173,43 @@ void voting_mode() {
   unsigned char input;
 	unsigned char confirm;
   unsigned char party_index = 0xFF;  // Invalid party index initially
-	
-	send_msg(x);		// Show available parties
+
   while (1) {
-		input = keypad_scan();               
-		if(input != 0){
-				if (input == keypad[0][0]) {  //checking for valid user input
-					party_index = 0;               
-			} else if (input == keypad[0][1]) { 
-					party_index = 1;               
-			} else if (input == keypad[0][2]) { 
-					party_index = 2;               
-			} else if (input == keypad[1][0]) { 
-					party_index = 3;               
-			} else {
-					send_msg(invalid);            //uf invalid input
-					msdelay(2000);
-					send_msg(x);
-					continue;                     // Go back to the loop to take input again
-			}
-			send_msg(y);
-			msdelay(2000);
-					//capture user input for confirmation
-			while(1){
-				confirm = keypad_scan();
-				if(confirm != 0){
-					if (confirm == keypad[0][3]) {      
-							candidate_votes[party_index]++; //increment after confirming
-							send_msg(z);                    
-							msdelay(2000);
-							break; //break the loop after confirming vote                         
-					}else { 
-							send_msg(not_confirmed);     //not confirmed go back to mode choose
-							msdelay(2000);
-							break;                       // Go back to the start of the voting process
-					}
-				}
-				
-			}
-			break;
-		}
+		send_msg(x);                  // Show available parties
+    msdelay(2000);                
+    input = keypad_scan();        
+
+    if (input == keypad[0][0]) {  //checking for valid user input
+        party_index = 0;               
+    } else if (input == keypad[0][1]) { 
+        party_index = 1;               
+    } else if (input == keypad[0][2]) { 
+        party_index = 2;               
+    } else if (input == keypad[0][3]) { 
+        party_index = 3;               
+    } else {
+				send_msg(invalid);            //uf invalid input
+        msdelay(2000);                 
+        continue;                     // Go back to the loop to take input again
+    }
+    send_msg(y);
+    msdelay(2000);
+    confirm = keypad_scan();				//capture user input for confirmation
+    if (confirm == keypad[0][3]) {      
+				switch (party_index){ //increment after confirming
+					case 1: party1++; break;
+					case 2: party2++; break;
+					case 3: party3++; break;
+					case 4: party4++; break;
+				} 
+				send_msg(z);                    
+				msdelay(2000);
+				break; //break the loop after confirming vote                         
+    } else { 
+				send_msg(not_confirmed);        //not confirmed go back to voting
+				msdelay(2000);
+        continue;                       // Go back to the start of the voting process
+    }
   }
 }
 void result_mode(){
@@ -238,11 +233,13 @@ void result_mode(){
 	if(input[0] == password[0] && input[1] == password[1] && input[2] == password[2] && input[3] == password[3]){
 		lcd_cmd(0x01); //clear screen
 		lcd_cmd(0x81); //bring cursor back 
-		for(i=0;i<4;i++){
-			disp_int_to_str(candidate_votes[i]);
-			lcd_data(' ');
-			msdelay(10);
-		}
+		disp_int_to_str(party1);
+		lcd_data(',');
+		disp_int_to_str(party2);
+		lcd_data(',');
+		disp_int_to_str(party3);
+		lcd_data(',');
+		disp_int_to_str(party4);
 	}
 	else{
 		send_msg(q);
