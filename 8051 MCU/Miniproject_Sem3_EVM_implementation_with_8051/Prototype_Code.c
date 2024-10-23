@@ -110,24 +110,27 @@ char keypad_scan() {
 unsigned int candidate_votes[4]; //stores individual candidate votes in the array (upto 4 candidates)
 unsigned char code password[4] = {'1','2','3','4'};
 
-void disp_int_to_str(unsigned int num){
-	unsigned char *str;
-	if(num==0){
-		*(str++) = '0';
-	}
-	else{
-		while(num>0){
-			*(str++) = (num%10) + '0';
-			num /=10;
-		}
- }
-	*str = '\0';
-	
-	while(*str != '\0'){ 		      // searching the null terminator in the sentence
-		lcd_data(*str);
-		str++;
-	}
+void disp_int_to_str(unsigned int num) {
+    unsigned char str[6];  // Allocate space for the string (enough for up to 5 digits and null terminator)
+    unsigned char *ptr = str;  // Use a pointer to traverse the string
+    int i = 0;
+
+    if (num == 0) {
+        *ptr++ = '0';
+    } else {
+        while (num > 0) {
+            *ptr++ = (num % 10) + '0';  // Store digits as characters
+            num /= 10;
+        }
+    }
+    *ptr = '\0';  // Null-terminate the string
+
+    // Traverse the string in reverse order to display it correctly
+    for (--ptr; ptr >= str; ptr--) {  
+        lcd_data(*ptr);  // Display the digits on the LCD
+    }
 }
+
 void msdelay(unsigned int ms){ //Function to create delay
 	unsigned int i;
 	TMOD = 0x01;
