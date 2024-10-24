@@ -246,6 +246,7 @@ void result_mode(){
 			lcd_data(',');
 			msdelay(10);
 		}
+		msdelay(10000);
 	}
 	else{
 		send_msg(q);
