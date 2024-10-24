@@ -81,27 +81,27 @@ unsigned char code keypad[4][4] = {
 char keypad_scan() {
 	row1 = 0; row2 = 1; row3 = 1; row4 = 1;  // Activate row 1
   if (col1 == 0) { ; while(col1==0); return keypad[0][0]; }
-  if (col2 == 0) { msdelay(10); while(col2==0); return keypad[0][1]; }
-  if (col3 == 0) { msdelay(10); while(col3==0); return keypad[0][2]; }
-  if (col4 == 0) { msdelay(10); while(col4==0); return keypad[0][3]; }
+  if (col2 == 0) { msdelay(50); while(col2==0); return keypad[0][1]; }
+  if (col3 == 0) { msdelay(50); while(col3==0); return keypad[0][2]; }
+  if (col4 == 0) { msdelay(50); while(col4==0); return keypad[0][3]; }
 
   row1 = 1; row2 = 0; row3 = 1; row4 = 1;  // Activate row 2
-  if (col1 == 0) { msdelay(10); while(col1==0); return keypad[1][0]; }
-  if (col2 == 0) { msdelay(10); while(col2==0); return keypad[1][1]; }
-  if (col3 == 0) { msdelay(10); while(col3==0); return keypad[1][2]; }
-  if (col4 == 0) { msdelay(10); while(col4==0); return keypad[1][3]; }
+  if (col1 == 0) { msdelay(50); while(col1==0); return keypad[1][0]; }
+  if (col2 == 0) { msdelay(50); while(col2==0); return keypad[1][1]; }
+  if (col3 == 0) { msdelay(50); while(col3==0); return keypad[1][2]; }
+  if (col4 == 0) { msdelay(50); while(col4==0); return keypad[1][3]; }
 
   row1 = 1; row2 = 1; row3 = 0; row4 = 1;  // Activate row 3
-  if (col1 == 0) { msdelay(10); while(col1==0); return keypad[2][0]; }
-  if (col2 == 0) { msdelay(10); while(col2==0); return keypad[2][1]; }
-  if (col3 == 0) { msdelay(10); while(col3==0); return keypad[2][2]; }
-  if (col4 == 0) { msdelay(10); while(col4==0); return keypad[2][3]; }
+  if (col1 == 0) { msdelay(50); while(col1==0); return keypad[2][0]; }
+  if (col2 == 0) { msdelay(50); while(col2==0); return keypad[2][1]; }
+  if (col3 == 0) { msdelay(50); while(col3==0); return keypad[2][2]; }
+  if (col4 == 0) { msdelay(50); while(col4==0); return keypad[2][3]; }
 
   row1 = 1; row2 = 1; row3 = 1; row4 = 0;  // Activate row 4
-  if (col1 == 0) { msdelay(10); while(col1==0); return keypad[3][0]; }
-  if (col2 == 0) { msdelay(10); while(col2==0); return keypad[3][1]; }
-  if (col3 == 0) { msdelay(10); while(col3==0); return keypad[3][2]; }
-  if (col4 == 0) { msdelay(10); while(col4==0); return keypad[3][3]; }
+  if (col1 == 0) { msdelay(50); while(col1==0); return keypad[3][0]; }
+  if (col2 == 0) { msdelay(50); while(col2==0); return keypad[3][1]; }
+  if (col3 == 0) { msdelay(50); while(col3==0); return keypad[3][2]; }
+  if (col4 == 0) { msdelay(50); while(col4==0); return keypad[3][3]; }
 
   return 0;  // No key pressed
 }
@@ -243,7 +243,7 @@ void result_mode(){
 		lcd_cmd(0x81); //bring cursor back 
 		for(i=0;i<4;i++){
 			disp_int_to_str(candidate_votes[i]);
-			lcd_data(' ');
+			lcd_data(',');
 			msdelay(10);
 		}
 	}
